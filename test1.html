@@ -11,6 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
         let parser = new DOMParser();
         xmlDoc = parser.parseFromString(xmlText, "text/xml");
         
+        data.children = [];
         let appenders = xmlDoc.querySelectorAll('appender');
         for (let app of appenders) {
             data.children.push({name:app.getAttribute('name')});
@@ -36,93 +37,78 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         computed: {
             isFolder: function () {
-            return this.model.children &&
-                this.model.children.length
+                return this.model.children && this.model.children.length
             }
         },
-        methods: {
-            toggle: function () {
-            if (this.isFolder) {
-                this.open = !this.open
-            }
-            },
-            changeType: function () {
-            if (!this.isFolder) {
-                Vue.set(this.model, 'children', [])
-                this.addChild()
-                this.open = true
-            }
-            },
-            addChild: function () {
-            this.model.children.push({
-                name: 'new stuff'
-            })
-            }
-        }
+        methods: {}
     })
 
     // boot up the demo
     var demo = new Vue({
         el: '#demo',
         data: {
-            treeData: data
+            appenders: data
         }
     })
 });
 </script>
 <body>
-<input id="convertButton" type="button" value="Convert"><br>
-<textarea id="xmlText" style="width:400px; height:400px;" >&lt;?xml version="1.0" encoding="UTF-8"?&gt;
-    &lt;configuration&gt;
-      &lt;appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender"&gt;
-        &lt;encoder&gt;
-          &lt;pattern&gt;%d{yyyy-MM-dd HH:mm:ss}|%-5level|%msg ||%class:%line %n&lt;/pattern&gt;
-        &lt;/encoder&gt;
-      &lt;/appender&gt;
-       &lt;appender name="Exec" class="ch.qos.logback.core.FileAppender"&gt;
-        &lt;file&gt;./logs/exec.log&lt;/file&gt;
-        &lt;encoder&gt;
-          &lt;charset&gt;UTF-8&lt;/charset&gt;
-          &lt;pattern&gt;%date %level [%thread] %logger{10} [%file:%line] %msg%n&lt;/pattern&gt;
-        &lt;/encoder&gt;
-      &lt;/appender&gt;
-      
-      &lt;appender name="sqlLog" class="ch.qos.logback.core.FileAppender"&gt;
-        &lt;file&gt;./logs/sql.log&lt;/file&gt;
-        &lt;encoder&gt;
-          &lt;pattern&gt;%date %level [%thread] %logger{10} [%file:%line] %msg%n&lt;/pattern&gt;
-        &lt;/encoder&gt;
-      &lt;/appender&gt;
-      &lt;logger name="org.hibernate.hql"&gt;
-        &lt;!-- Showing [value] of logs --&gt;
-        &lt;level value="ERROR" /&gt;
-      &lt;/logger&gt;
-      &lt;!-- additivity is set to multiple appender --&gt;
-      &lt;logger name="org.hibernate.SQL" level="DEBUG" additivity="false"&gt;
-        &lt;appender-ref ref="sqlLog" /&gt;
-      &lt;/logger&gt;
-      &lt;logger name="com.example.spring" level="INFO" additivity="false"&gt;
-        &lt;appender-ref ref="Exec" /&gt;
-      &lt;/logger&gt;
-      &lt;root level="WARN"&gt;
-        &lt;appender-ref ref="CONSOLE" /&gt;
-      &lt;/root&gt;
-      
-    &lt;/configuration&gt;
-</textarea>
-<ul id="demo" style="width:400px;float:right;">
-<item
-    class="item"
-    :model="treeData">
-</item>
-</ul>
+<div style="display:flex;">
+    <div style="flex-direction:row;">
+        <input id="convertButton" type="button" value="Convert"><br>
+        <textarea id="xmlText" style="width:400px; height:400px;" >&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+            &lt;configuration&gt;
+                &lt;appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender"&gt;
+                &lt;encoder&gt;
+                    &lt;pattern&gt;%d{yyyy-MM-dd HH:mm:ss}|%-5level|%msg ||%class:%line %n&lt;/pattern&gt;
+                &lt;/encoder&gt;
+                &lt;/appender&gt;
+                &lt;appender name="Exec" class="ch.qos.logback.core.FileAppender"&gt;
+                &lt;file&gt;./logs/exec.log&lt;/file&gt;
+                &lt;encoder&gt;
+                    &lt;charset&gt;UTF-8&lt;/charset&gt;
+                    &lt;pattern&gt;%date %level [%thread] %logger{10} [%file:%line] %msg%n&lt;/pattern&gt;
+                &lt;/encoder&gt;
+                &lt;/appender&gt;
+                
+                &lt;appender name="sqlLog" class="ch.qos.logback.core.FileAppender"&gt;
+                &lt;file&gt;./logs/sql.log&lt;/file&gt;
+                &lt;encoder&gt;
+                    &lt;pattern&gt;%date %level [%thread] %logger{10} [%file:%line] %msg%n&lt;/pattern&gt;
+                &lt;/encoder&gt;
+                &lt;/appender&gt;
+                &lt;logger name="org.hibernate.hql"&gt;
+                &lt;!-- Showing [value] of logs --&gt;
+                &lt;level value="ERROR" /&gt;
+                &lt;/logger&gt;
+                &lt;!-- additivity is set to multiple appender --&gt;
+                &lt;logger name="org.hibernate.SQL" level="DEBUG" additivity="false"&gt;
+                &lt;appender-ref ref="sqlLog" /&gt;
+                &lt;/logger&gt;
+                &lt;logger name="com.example.spring" level="INFO" additivity="false"&gt;
+                &lt;appender-ref ref="Exec" /&gt;
+                &lt;/logger&gt;
+                &lt;root level="WARN"&gt;
+                &lt;appender-ref ref="CONSOLE" /&gt;
+                &lt;/root&gt;
+                
+            &lt;/configuration&gt;
+        </textarea>
+    </div>
+    <div style="flex-direction:row;">
+        <ul id="demo" style="width:400px;float:right;">
+            <item
+                class="item"
+                :model="appenders">
+            </item>
+        </ul>
+    </div>
+</div>
 
 <script type="text/x-template" id="item-template">
     <li>
       <div
-        :class="{bold: isFolder}"
-        @click="toggle"
-        @dblclick="changeType">
+        :class="{bold: isFolder}">
         {{model.name}}
       </div>
       <ul v-if="isFolder">
