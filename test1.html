@@ -10,44 +10,50 @@ document.addEventListener('DOMContentLoaded', () => {
         let xmlText = document.getElementById('xmlText').value;
         let parser = new DOMParser();
         xmlDoc = parser.parseFromString(xmlText, "text/xml");
-        
-        data.children = [];
+
+        appendersData.children = [];
         let appenders = xmlDoc.querySelectorAll('appender');
         for (let app of appenders) {
-            data.children.push({name:app.getAttribute('name')});
+            appendersData.children.push({name:app.getAttribute('name')});
+        }
+
+        filesData.children = [];
+        let loggers = xmlDoc.querySelectorAll('logger');
+        for (let logger of loggers) {
+            let name = logger.getAttribute('name');
+            let level = logger.getAttribute('level');
+            filesData.children.push({name: name, children:[{name: level}]});
         }
     });
 
     // demo data
-    var data = {
+    let appendersData = {
         name: 'Appenders',
+        children: []
+    }
+    let filesData = {
+        name: 'Files',
         children: []
     }
 
     // define the item component
     Vue.component('item', {
         template: '#item-template',
-        props: {
-            model: Object
-        },
-        data: function () {
-            return {
-            open: false
-            }
-        },
+        props: { model: Object},
         computed: {
             isFolder: function () {
                 return this.model.children && this.model.children.length
             }
         },
         methods: {}
-    })
+    });
 
     // boot up the demo
     var demo = new Vue({
         el: '#demo',
         data: {
-            appenders: data
+            appenders: appendersData,
+            files: filesData,
         }
     })
 });
@@ -100,6 +106,10 @@ document.addEventListener('DOMContentLoaded', () => {
             <item
                 class="item"
                 :model="appenders">
+            </item>
+            <item
+                class="item"
+                :model="files">
             </item>
         </ul>
     </div>
